@@ -1,0 +1,60 @@
+{%- liquid
+  assign mobile_source = section.settings.video_mobile.sources | where: 'format', 'mp4' | map: 'url' | first
+  assign desktop_source = section.settings.video_desktop.sources | where: 'format', 'mp4' | map: 'url' | first
+  assign fallback = section.settings.video.sources | where: 'format', 'mp4' | map: 'url' | first
+  assign mobile_video_url = mobile_source | default: fallback
+  assign desktop_video_url = desktop_source | default: fallback
+-%}
+
+{%- comment -%} Mobile video: visible on screens below 1024px {%- endcomment -%}
+<div
+  class="background-video absolute inset-0 h-full w-full overflow-hidden block lg:hidden"
+  id="video-{{ component_id }}-mobile"
+  x-data="Video('inline', 'autoplay')"
+  x-intersect:leave="pause"
+  x-intersect:enter="play"
+>
+  <div x-data="HTMLVideo" @play="play" @pause="pause">
+    <video
+      class="absolute inset-0 h-full w-full object-cover"
+      x-ref="video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="none"
+    >
+      <source src="{{ mobile_video_url }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+{%- comment -%} Desktop video: visible on screens 1024px and above {%- endcomment -%}
+<div
+  class="background-video absolute inset-0 h-full w-full overflow-hidden hidden lg:block"
+  id="video-{{ component_id }}-desktop"
+  x-data="Video('inline', 'autoplay')"
+  x-intersect:leave="pause"
+  x-intersect:enter="play"
+>
+  <div x-data="HTMLVideo" @play="play" @pause="pause">
+    <video
+      class="absolute inset-0 h-full w-full object-cover"
+      x-ref="video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="none"
+    >
+      <source src="{{ desktop_video_url }}" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+{% unless request.design_mode %}
+  <script src="{{ 'video.js' | asset_url }}" type="module"></script>
+  <script src="{{ 'html-video.js' | asset_url }}" type="module"></script>
+{% endunless %}
