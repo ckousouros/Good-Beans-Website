@@ -1,0 +1,48 @@
+<style>
+  .prints-collection-sizes {
+    display: flex;
+    gap: 0;
+  }
+  .prints-collection-sizes .column {
+    flex: 1;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .prints-collection-sizes .column p {
+    margin: 0;
+  }
+</style>
+
+<div class="prints-collection-sizes">
+  <div class="column">
+    <p>{{ section.settings.column_1_text }}</p>
+  </div>
+  <div class="column">
+    <p>{{ section.settings.column_2_text }}</p>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Prints Collection Sizes",
+  "settings": [
+    {
+      "type": "text",
+      "id": "column_1_text",
+      "label": "Column 1 Text",
+      "default": "Column 1"
+    },
+    {
+      "type": "text",
+      "id": "column_2_text",
+      "label": "Column 2 Text",
+      "default": "Column 2"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Prints Collection Sizes"
+    }
+  ]
+}
+{% endschema %}

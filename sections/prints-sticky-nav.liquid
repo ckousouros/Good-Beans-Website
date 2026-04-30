@@ -1,0 +1,73 @@
+{% if section.settings.linklist != blank %}
+  <aside class="-mx-5 px-5 mb-5" id="prints-sticky-nav" style="position: fixed; top: 70px; left: 0; right: 0; z-index: 99; background-color: #171717; box-shadow: 0 -20px 0 20px #171717; padding-bottom: 8px;">
+    <nav>
+      <ul class="-mx-2 -mt-2 flex w-full items-center justify-start flex-wrap">
+        {% for link in linklists[section.settings.linklist].links %}
+          <li class="break-word mt-2 px-2">
+            <a class="prints-sticky-nav-link" href="{{ link.url }}">
+              {{- link.title -}}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </aside>
+  <div class="prints-sticky-nav-spacer"></div>
+{% endif %}
+
+<style>
+  .prints-sticky-nav-link {
+    text-decoration: none;
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 2px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .prints-sticky-nav-link.nav-active {
+    background-color: #f5f0e8 !important;
+    color: #000000 !important;
+    text-decoration: none !important;
+  }
+
+  @media screen and (max-width: 749px) {
+    .prints-sticky-nav-spacer {
+      display: block;
+      height: 120px;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    .prints-sticky-nav-spacer {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.prints-sticky-nav-link').forEach(function(link) {
+      if (link.pathname === window.location.pathname) {
+        link.classList.add('nav-active');
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Prints Sticky Nav",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "linklist",
+      "label": "Navigation menu"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Prints Sticky Nav"
+    }
+  ]
+}
+{% endschema %}

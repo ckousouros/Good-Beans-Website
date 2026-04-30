@@ -1,0 +1,39 @@
+<style>
+  .category-links {
+    display: flex;
+    gap: 4rem;
+    justify-content: center;
+    align-items: center;
+    padding: 5rem 0;
+  }
+  .category-links a {
+    text-align: center;
+    font-size: 500%;
+    font-weight: bold;
+    text-decoration: underline;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    padding: 0.25rem 2.5rem;
+    border-radius: 9999px;
+  }
+  .category-links a:hover,
+  .category-links a:active {
+    background-color: #e9decd;
+    color: #171717;
+  }
+  @media (max-width: 749px) {
+    .category-links {
+      flex-direction: column;
+      gap: 2rem;
+      padding: 3rem 0;
+    }
+    .category-links a {
+      font-size: 250%;
+    }
+  }
+</style>
+
+<div class="category-links">
+  <a href="/collections/iconic-nyc">NYC Prints</a>
+  <a href="/collections/protest-prints">Protest Prints</a>
+  <a href="/collections/posters">Posters</a>
+</div>

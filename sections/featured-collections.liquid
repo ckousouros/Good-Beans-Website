@@ -1,0 +1,195 @@
+{%- liquid
+  assign section_color = section.settings.color_scheme | default: 'scheme1'
+  assign title = section.settings.title
+
+  assign show_section_title = false
+  if title != blank or section.settings.subheading != blank
+    assign show_section_title = true
+  endif
+
+  case section.blocks.size
+    when 1
+      assign collections_per_row = '1'
+    when 2
+      assign collections_per_row = '2'
+    when 3
+      assign collections_per_row = '3'
+    else
+      assign collections_per_row = '4'
+  endcase
+
+  if section.settings.columns_desktop == '3'
+    assign collections_per_row = '3'
+  elsif section.settings.columns_desktop == '4'
+    assign collections_per_row = '4'
+  elsif section.settings.columns_desktop == '2'
+    assign collections_per_row = '2'
+  endif
+
+  if show_section_title and settings.section_titles_position == 'left_of_content'
+    assign container_classes = 'lg:grid lg:gap-x-grid-gutter lg:grid-cols-4'
+    assign content_area_classes = 'lg:col-span-3 lg:col-end-last'
+  endif
+-%}
+
+<section
+  class="{% unless section.settings.remove_top_padding %}pt-section{% endunless %} {% unless section.settings.remove_bottom_padding %}pb-section{% endunless %} bg-scheme-background text-scheme-text {% if section.settings.disable_color_transition %}disable-section-color-transition disable-section-color-transition-source{% endif %}"
+  data-color-scheme="{{ section_color }}"
+>
+  <div class="mx-auto max-w-site px-0 lg:px-10">
+    <div class="{{ container_classes }}">
+      {%- if show_section_title -%}
+        {%- render 'section-title',
+          title: title,
+          subheading: section.settings.subheading
+        -%}
+      {%- endif -%}
+      <div class="{{ content_area_classes }}">
+        <ul class="lg:grid lg:gap-y-14 lg:gap-x-grid-gutter lg:grid-cols-{{ collections_per_row }} list-none m-0 p-0 flex flex-wrap" role="list">
+          {% for block in section.blocks %}
+            {%- assign collection = block.settings.collection -%}
+            <li class="block pb-10 px-5 lg:px-0 lg:w-auto lg:pb-0 text-theme-basic w-3/4 lg:w-auto" {{ block.shopify_attributes }}>
+              <a href="{{ collection.url }}" class="block no-underline text-inherit group">
+                <div class="featured-collections__image-wrapper overflow-hidden" style="aspect-ratio: {% if section.settings.image_ratio == 'portrait' %}4/5{% elsif section.settings.image_ratio == 'landscape' %}4/3{% else %}1/1{% endif %};">
+                  {%- if collection.featured_image -%}
+                    <img
+                      src="{{ collection.featured_image | image_url: width: 800 }}"
+                      alt="{{ collection.featured_image.alt | escape }}"
+                      class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                      width="800"
+                      height="800"
+                    >
+                  {%- else -%}
+                    <div class="w-full h-full bg-scheme-subtle-background flex items-center justify-center">
+                      {{ 'collection-1' | placeholder_svg_tag: 'w-full h-full' }}
+                    </div>
+                  {%- endif -%}
+                </div>
+                <div class="mt-3">
+                  <p class="font-medium text-theme-basic m-0">
+                    {%- if collection != blank -%}
+                      {{ collection.title }}
+                    {%- else -%}
+                      Collection
+                    {%- endif -%}
+                  </p>
+                  {%- if section.settings.show_product_count and collection != blank -%}
+                    <p class="text-sm text-scheme-secondary-text mt-1 m-0">{{ collection.products_count }} products</p>
+                  {%- endif -%}
+                </div>
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured collections",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured collections"
+    },
+    {
+      "id": "subheading",
+      "type": "richtext",
+      "label": "Subheading",
+      "default": "<p>Use this text to share information about your collections.</p>"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Number of columns on desktop",
+      "default": "3",
+      "options": [
+        { "value": "2", "label": "2 collections" },
+        { "value": "3", "label": "3 collections" },
+        { "value": "4", "label": "4 collections" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show product count",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "default": "scheme1",
+      "label": "Color scheme"
+    },
+    {
+      "type": "checkbox",
+      "id": "disable_color_transition",
+      "label": "Disable transition",
+      "info": "Overrides section color transitions theme setting."
+    },
+    {
+      "type": "header",
+      "content": "Spacing",
+      "info": "Adjust vertical spacing to visually connect this section to adjacent sections"
+    },
+    {
+      "type": "checkbox",
+      "id": "remove_top_padding",
+      "label": "Remove top padding",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "remove_bottom_padding",
+      "label": "Remove bottom padding",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collections",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer", "aside"]
+  }
+}
+{% endschema %}
